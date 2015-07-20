@@ -79,7 +79,7 @@ myMaster.onFanFullyUpdated = function(myBigAss){
  	- For property `light.brightness` on BigAssFan: `myBigAss` call `myBigAss.light.update('brightness', optionalCallback)`;
  	- You can also use `myBigAss.update('light', optionalCallback);` or `myBigAss.updateAll(optionalCallback);`
 
-#### Properties supported
+#### Properties 'supported'
  - `fan.isOn`
 	- bool value
  - `fan.speed`
@@ -145,4 +145,5 @@ Where this API is going
  - Integration with [HomeKit](https://github.com/nfarina/homebridge)
  - Checking that setters have only valid input parameters
  - I hear unit tests are a good thing >.>
+ - Add support for changing wireless access point used / the whole pairing process flow. 
  - Register update callback might be changed to only call you on value update - not on 'fan-says-there-was-an-update-update'
