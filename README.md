@@ -131,3 +131,4 @@ Where this API is going
  - I hear unit tests are a good thing >.>
  - Add support for changing wireless access point used / the whole pairing process flow.
  - Register update callback might be changed to only call you on value update - not on 'fan-says-there-was-an-update-update'
+ - Need to have an error callback you can register for - eg : error setting property on fan
