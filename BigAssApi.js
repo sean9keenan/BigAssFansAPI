@@ -115,16 +115,6 @@ function BigAssProperty (name, bigAssFan) {
                 return successfullyUpdated;
             });
 
-            // var failedQueries = 0;
-            // onUpdateFunction = function() {
-            //     if (!successfullyUpdated && failedQueries < this.maxRetries) {
-            //         myLogWrapper("Failed to set property - retrying");
-            //         failedQueries++;
-            //         toSetProperty();
-            //         setTimeout(onUpdateFunction, this.waitTimeOnRetry);
-            //     }
-            // }.bind(this.bigAssFan);
-            // setTimeout(onUpdateFunction, this.bigAssFan.waitTimeOnRetry);
         }.bind(this)
 
         Object.defineProperty(this, name, {

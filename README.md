@@ -1,6 +1,6 @@
 Unofficial Big Ass API
 ======================
-This is this an unofficial Node.js API for (Big Ass Fans - fans with SenseME)[www.bigassfans.com]. In particular - all development was done on a Haiku fan with SenseME.
+This is this an unofficial Node.js API for [Big Ass Fans - fans with SenseME](www.bigassfans.com). In particular - all development was done on a Haiku fan with SenseME.
 
 Boring stuff out of the way
 ---------------------------
@@ -70,8 +70,10 @@ myMaster.onFanFullyUpdated = function(myBigAss){
  - All properties can be set
  	- This will send a server request - getting the property will not be updated until the device confirms it has been updated
  	- Implements retries automatically (`maxRetries`, `waitTimeOnRetry` can be set as fan properties)
- - Listening for update events is possible
+ - Listening for update events
  	- If phone or other system updates the fan - or just when our "set" is succesful
+ 	- `myBigAss.light.registerUpdateCallback("brightness", function (newValue) {});
+ 	- can all be unregistered with `unregisterUpdateCallback(id)` where `id` is the return of `registerUpdateCallback()`
  - Forcing an update
  	- For property `light.brightness` on BigAssFan: `myBigAss` call `myBigAss.light.update('brightness', optionalCallback)`;
  	- You can also use `myBigAss.update('light', optionalCallback);` or `myBigAss.updateAll(optionalCallback);`
@@ -139,7 +141,7 @@ Where this API is going
 -----------------------
  - Hopefully not breaking you!
  	- Stuff that I have in here shouldn't be changing that much - but if it does - sorry!
- - Integration with (HomeKit)[https://github.com/nfarina/homebridge]
+ - Integration with [HomeKit](https://github.com/nfarina/homebridge)
  - Checking that setters have only valid input parameters
  - I hear unit tests are a good thing >.>
  - Register update callback might be changed to only call you on value update - not on 'fan-says-there-was-an-update-update'
