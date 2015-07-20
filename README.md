@@ -135,7 +135,7 @@ myMaster.onFanFullyUpdated = function(myBigAss){
 
 How was this made
 -----------------
-Through the magic of Wireshark!
+Through the magic of Wireshark! And the time granted by a weekend!
 
 Pretty sure all the API's I saw on when sniffing are now in here. But that'll probably change as BigAssFans adds more features.
 
