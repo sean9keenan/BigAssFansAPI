@@ -1,6 +1,7 @@
 Unofficial Big Ass API
 ======================
-This is this an unofficial Node.js API for [Big Ass Fans - fans with SenseME](www.bigassfans.com). In particular - all development was done on a Haiku fan with SenseME.
+This is this an unofficial Node.js API for [Big Ass Fans - fans with SenseME](www.bigassfans.com).
+In particular - all development was done on a Haiku fan with SenseME.
 
 Boring stuff out of the way
 ---------------------------
@@ -72,7 +73,7 @@ myMaster.onFanFullyUpdated = function(myBigAss){
  	- Implements retries automatically (`maxRetries`, `waitTimeOnRetry` can be set as fan properties)
  - Listening for update events
  	- If phone or other system updates the fan - or just when our "set" is succesful
- 	- `myBigAss.light.registerUpdateCallback("brightness", function (newValue) {});
+ 	- `myBigAss.light.registerUpdateCallback("brightness", function (newValue) {});`
  	- can all be unregistered with `unregisterUpdateCallback(id)` where `id` is the return of `registerUpdateCallback()`
  - Forcing an update
  	- For property `light.brightness` on BigAssFan: `myBigAss` call `myBigAss.light.update('brightness', optionalCallback)`;
