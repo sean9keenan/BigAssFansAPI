@@ -1,6 +1,7 @@
 Unofficial Big Ass API
 ======================
 This is this an unofficial Node.js API for [Big Ass Fans - fans with SenseME](www.bigassfans.com).
+
 In particular - all development was done on a Haiku fan with SenseME.
 
 Boring stuff out of the way
