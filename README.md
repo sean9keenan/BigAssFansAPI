@@ -81,56 +81,40 @@ myMaster.onFanFullyUpdated = function(myBigAss){
  	- You can also use `myBigAss.update('light', optionalCallback);` or `myBigAss.updateAll(optionalCallback);`
 
 #### Properties 'supported'
- - `fan.isOn`
-	- bool value
+ - `fan.isOn` - bool value
  - `fan.speed`
  - `fan.min`
  - `fan.max`
  - `fan.auto`
  - `fan.whoosh`
- - `fan.isSpinningForwards`
-	- bool value
+ - `fan.isSpinningForwards` - bool value
  - `light.brightness`
  - `light.min`
  - `light.max`
  - `light.auto`
- - `light.exists`
-	- readonly
-	- bool value
- - `light.isOccupied`
-	- readonly
-	- bool value
+ - `light.exists` - readonly - bool value
+ - `light.isOccupied` - readonly - bool value
  - `light.minTimeout`
  - `light.maxTimeout`
  - `light.timeout`
- - `learn.isOn`
-	- bool value
+ - `learn.isOn` - bool value
  - `learn.minSpeed`
  - `learn.maxSpeed`
  - `learn.zeroTemp`
- - `sleep.isOn`
-	- bool value
+ - `sleep.isOn` - bool value
  - `sleep.smartIdealTemp`
  - `sleep.minSpeed`
  - `sleep.maxSpeed`
- - `device.beeper`
-	- bool value
- - `device.indicators`
-	- bool value
- - `device.winterMode`
-	- bool value
+ - `device.beeper` - bool value
+ - `device.indicators` - bool value
+ - `device.winterMode` - bool value
  - `device.height`
- - `device.token`
-	- readonly
+ - `device.token` - readonly
 	- No idea what this token is for.
- - `device.dhcp`
-	- bool value
- - `device.fw`
-	 - readonly
- - `device.broadcastSSID`
- 	- readonly
- - `device.isAccessPoint`
-	- bool value
+ - `device.dhcp` - bool value
+ - `device.fw` - readonly
+ - `device.broadcastSSID` - readonly
+ - `device.isAccessPoint` - bool value
 
 How was this made
 -----------------
@@ -145,5 +129,5 @@ Where this API is going
  - Integration with [HomeKit](https://github.com/nfarina/homebridge)
  - Checking that setters have only valid input parameters
  - I hear unit tests are a good thing >.>
- - Add support for changing wireless access point used / the whole pairing process flow. 
+ - Add support for changing wireless access point used / the whole pairing process flow.
  - Register update callback might be changed to only call you on value update - not on 'fan-says-there-was-an-update-update'
