@@ -103,7 +103,6 @@ myMaster.onFanFullyUpdated = function(myBigAss){
  - `light.maxTimeout`
  - `light.timeout`
  - `learn.isOn`
-	- readonly
 	- bool value
  - `learn.minSpeed`
  - `learn.maxSpeed`

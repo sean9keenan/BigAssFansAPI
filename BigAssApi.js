@@ -217,7 +217,7 @@ function BigAssFan (name, id, address, master) {
     this.sensor.createGetField('timeout', ['SNSROCC', 'TIMEOUT'], true, 'CURR');
 
     this.learn = new BigAssProperty('learn', this);
-    this.learn.createGetField('isOn', ['LEARN', 'STATE'], false, undefined, 'ON', 'OFF');
+    this.learn.createGetField('isOn', ['LEARN', 'STATE'], true, undefined, 'ON', 'OFF');
     this.learn.createGetField('minSpeed', ['LEARN', 'MINSPEED'], true);
     this.learn.createGetField('maxSpeed', ['LEARN', 'MAXSPEED'], true);
     this.learn.createGetField('zeroTemp', ['LEARN', 'ZEROTEMP'], true); // ??? Wat.
