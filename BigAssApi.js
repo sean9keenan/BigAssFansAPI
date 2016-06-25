@@ -196,15 +196,15 @@ function BigAssFan (name, id, address, master) {
 
     this.fan = new BigAssProperty('fan', this);
     this.fan.createGetField('isOn', ['FAN', 'PWR'], true, undefined, "ON", "OFF");
-    this.fan.createGetField('speed', ['FAN', 'SPD'], true, 'CURR');
+    this.fan.createGetField('speed', ['FAN', 'SPD'], true, 'ACTUAL');
     this.fan.createGetField('min', ['FAN', 'SPD'], true, 'MIN');
     this.fan.createGetField('max', ['FAN', 'SPD'], true, 'MAX');
     this.fan.createGetField('auto', ['FAN', 'AUTO'], true, undefined);
     this.fan.createGetField('whoosh', ['FAN', 'WHOOSH'], true, "STATUS");
-    this.fan.createGetField('isSpinningForwards', ['FAN', 'DIR'], true, undefined, "FWD", "BKW"); // TODO: Check backwards string...
+    this.fan.createGetField('isSpinningForwards', ['FAN', 'DIR'], true, undefined, "FWD", "REV");
 
     this.light = new BigAssProperty('light', this);
-    this.light.createGetField('brightness', ['LIGHT', 'LEVEL'], true, 'CURR');
+    this.light.createGetField('brightness', ['LIGHT', 'LEVEL'], true, 'ACTUAL');
     this.light.createGetField('min', ['LIGHT', 'LEVEL'], true, 'MIN');
     this.light.createGetField('max', ['LIGHT', 'LEVEL'], true, 'MAX');
     this.light.createGetField('auto', ['LIGHT', 'AUTO'], true, undefined);
