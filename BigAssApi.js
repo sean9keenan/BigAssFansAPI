@@ -44,28 +44,12 @@ function FanMaster (numberOfExpectedFans) {
         this.connectionOpen = false;
     }.bind(this));
 
-/*    handleNewFan = function(msg, address) {
-        if (msg[0] == "ALL") {
-            return; // Message not addressed to us
-        }
-        if (msg[1] == "DEVICE" && msg[2] == "ID") {
-            var newFan = new BigAssFan(msg[0], msg[3], address, this);
-            this.allFans[msg[0]] = newFan;
-            this.onFanConnection(newFan);
-            newFan.updateAll(function() {
-                this.onFanFullyUpdated(newFan)
-            }.bind(this));
-        } else {
-            myLogWrapper("Recieved message from unknown fan - rescanning");
-            this.rescanForFans();
-        }
-    }.bind(this)
-    */
         handleNewFan = function(msg, address) {
         if (msg[0] == "ALL") {
             return; // Message not addressed to us
         }
-        if (msg[4] == "FAN,LSERIES") { //this is less than perfect, but at least allows a program to continue passed the onfanfullyupdated function when a wall control is present - obviously needs to not be LSERIES specfic - need a function to just look at the "FAN" part of that string
+        var deviceType = msg[4].split(",",1); // Grab first part of string before ","
+        if (deviceType == "FAN") {
             	var newFan = new BigAssFan(msg[0], msg[3], address, this);
             	this.allFans[msg[0]] = newFan;
             	this.onFanConnection(newFan);
@@ -73,9 +57,9 @@ function FanMaster (numberOfExpectedFans) {
                 	this.onFanFullyUpdated(newFan)
             	}.bind(this));
             }
-        if (msg[4] == "SWITCH,SENSEME") {
+        if (deviceType == "SWITCH") {
             myLogWrapper("skipping wall control for now")}
-         else {
+        else {
             myLogWrapper("Received message from unknown fan - rescanning");
             this.rescanForFans();
         }
