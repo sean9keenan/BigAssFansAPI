@@ -44,22 +44,21 @@ function FanMaster (numberOfExpectedFans) {
         this.connectionOpen = false;
     }.bind(this));
 
-        handleNewFan = function(msg, address) {
+    handleNewFan = function(msg, address) {
         if (msg[0] == "ALL") {
             return; // Message not addressed to us
         }
         var deviceType = msg[4].split(",",1); // Grab first part of string before ","
         if (deviceType == "FAN") {
-            	var newFan = new BigAssFan(msg[0], msg[3], address, this);
-            	this.allFans[msg[0]] = newFan;
-            	this.onFanConnection(newFan);
-            	newFan.updateAll(function() {
-                	this.onFanFullyUpdated(newFan)
-            	}.bind(this));
-            }
-        if (deviceType == "SWITCH") {
-            myLogWrapper("skipping wall control for now")}
-        else {
+            var newFan = new BigAssFan(msg[0], msg[3], address, this);
+            this.allFans[msg[0]] = newFan;
+            this.onFanConnection(newFan);
+            newFan.updateAll(function() {
+                this.onFanFullyUpdated(newFan)
+            }.bind(this));
+        } else if (deviceType == "SWITCH") {
+            myLogWrapper("Skipping wall control - TODO : Add support for wall control")
+        } else {
             myLogWrapper("Received message from unknown fan - rescanning");
             this.rescanForFans();
         }
@@ -108,7 +107,7 @@ function BigAssProperty (name, bigAssFan) {
             var successfullyUpdated = false;
             var updateTableId = this.registerUpdateCallback(name, function() {
                 successfullyUpdated = true;
-                this.unregisterUpdateCallback(updateTableId);
+                this.unregisterUpdateCallback(name, updateTableId);
             }.bind(this))
 
             var toSetProperty = function () {
@@ -147,27 +146,40 @@ function BigAssProperty (name, bigAssFan) {
 
     }.bind(this)
 
+    /**
+     * Register an update callback
+     * @param name     - Property name to register for a callback on
+     * @param callback - Callback, first arg is error (null if none), second is value
+     */
     this.update = function(name, callback) {
         var updated = false;
-        var id = this.registerUpdateCallback(name, function (){
+        var id = this.registerUpdateCallback(name, function (value){
             updated = true;
-            this.unregisterUpdateCallback(id);
+            this.unregisterUpdateCallback(name, id);
             if (callback) {
-                callback();
+                callback(null, value);
             }
         }.bind(this));
 
-        retryCall(this.bigAssFan.maxRetries, this.bigAssFan.waitTimeOnRetry, function() {
+        var functionToRequestUpdate = function() {
             this.bigAssFan.send(this.allFieldsUpdateQuery[name]);
-        }.bind(this), function (){
-            return updated;
-        });
+        }.bind(this)
+
+        var isUpdateSucceeded = function() { return updated; }
+
+        var updateFailed = function() {
+            if (callback) {
+                callback("Cannot reach fan / property", null);
+            }
+        }
+
+        retryCall(this.bigAssFan.maxRetries, this.bigAssFan.waitTimeOnRetry, functionToRequestUpdate, isUpdateSucceeded, updateFailed);
     }.bind(this)
 
     this.updateAll = function(callback) {
-        var syncCallback = new syncingCallback(this.allFieldsUpdateQuery, callback);
+        var syncCallback = syncingCallback(this.allFieldsUpdateQuery, callback);
         for (var fieldKey in this.allFieldsUpdateQuery) {
-            this.update(fieldKey, syncCallback.callbackToUse);
+            this.update(fieldKey, syncCallback);
         }
     }.bind(this)
 
@@ -180,15 +192,22 @@ function BigAssProperty (name, bigAssFan) {
     }.bind(this)
 
     this.unregisterUpdateCallback = function(name, identifier) {
-        // return delete this.updateCallbacks[name][identifier];
+        if (this.updateCallbacks[name][identifier]) {
+            delete this.updateCallbacks[name][identifier];
+            return true
+        }
+        return false
     }.bind(this)
 
     this.bigAssFan.propertyTable[name] = this;
 }
 
+/**
+ * Each Big ass fan has a set of properties which in turn have fields
+ */
 function BigAssFan (name, id, address, master) {
     this.name = name;
-    this.id = id;
+    this.id = id ? id : name; // Use the name as the backup if no ID is available
     this.address = address;
     this.master = master;
     this.onPropertyUpdate = undefined;
@@ -200,10 +219,10 @@ function BigAssFan (name, id, address, master) {
 
     this.fan = new BigAssProperty('fan', this);
     this.fan.createGetField('isOn', ['FAN', 'PWR'], true, undefined, "ON", "OFF");
-    this.fan.createGetField('speed', ['FAN', 'SPD'], true, 'ACTUAL'); //0-7
+    this.fan.createGetField('speed', ['FAN', 'SPD'], true, 'ACTUAL'); // 0-7 on most fans - can also read min/max 
     this.fan.createGetField('min', ['FAN', 'SPD'], true, 'MIN');
     this.fan.createGetField('max', ['FAN', 'SPD'], true, 'MAX');
-    this.fan.createGetField('auto', ['FAN', 'AUTO'], true, undefined, "ON", "OFF"); // fan sensor enabled
+    this.fan.createGetField('auto', ['FAN', 'AUTO'], true, undefined, "ON", "OFF"); // Fan sensor enabled
     this.fan.createGetField('whoosh', ['FAN', 'WHOOSH'], true, "STATUS"); // ON, OFF
     this.fan.createGetField('isSpinningForwards', ['FAN', 'DIR'], true, undefined, "FWD", "REV");
 
@@ -211,24 +230,24 @@ function BigAssFan (name, id, address, master) {
     this.light.createGetField('brightness', ['LIGHT', 'LEVEL'], true, 'ACTUAL'); // 0-16
     this.light.createGetField('min', ['LIGHT', 'LEVEL'], true, 'MIN');
     this.light.createGetField('max', ['LIGHT', 'LEVEL'], true, 'MAX');
-    this.light.createGetField('auto', ['LIGHT', 'AUTO'], true, undefined, 'ON', 'OFF'); //light sensor enabled
+    this.light.createGetField('auto', ['LIGHT', 'AUTO'], true, undefined, 'ON', 'OFF'); // Light sensor enabled
     this.light.createGetField('exists', ['DEVICE', 'LIGHT'], false, undefined, "PRESENT"); // Unknown false string.. WAY too lazy to unplug from fan
 
     this.sensor = new BigAssProperty('room', this);
     this.sensor.createGetField('isOccupied', ['SNSROCC', 'STATUS'], false, undefined, 'OCCUPIED', 'UNOCCUPIED');
-    this.sensor.createGetField('minTimeout', ['SNSROCC', 'TIMEOUT'], true, 'MIN'); //in seconds, ie 3600000 is 60 min
-    this.sensor.createGetField('maxTimeout', ['SNSROCC', 'TIMEOUT'], true, 'MAX'); //in seconds
-    this.sensor.createGetField('timeout', ['SNSROCC', 'TIMEOUT'], true, 'CURR'); //in seconds
+    this.sensor.createGetField('minTimeout', ['SNSROCC', 'TIMEOUT'], true, 'MIN'); // Seconds (ie 3600000 is 60 min)
+    this.sensor.createGetField('maxTimeout', ['SNSROCC', 'TIMEOUT'], true, 'MAX'); // Seconds
+    this.sensor.createGetField('timeout', ['SNSROCC', 'TIMEOUT'], true, 'CURR');   // Seconds
 
     this.sensor = new BigAssProperty('smartmode', this);
-    this.sensor.createGetField('smartmodeactual', ['SMARTMODE', 'ACTUAL'], true, undefined, 'OFF', 'COOLING', 'HEATING'); //heating smartmode invokes LEARN;STATE;OFF and FAN;PWR;ON and FAN;SPD;ACTUAL;1 and WINTERMODE;STATE;ON and SMARTMODE;STATE;HEATING and SMARTMODE;ACTUAL;HEATING
-    this.sensor.createGetField('smartmodestate', ['SMARTMODE', 'STATE'], true, undefined, 'LEARN', 'COOLING', 'HEATING', 'FOLLOWSTAT'); //FOLLOWSTAT is the works with nest option, it is followed by SMARTMODE;ACTUAL;OFF command
+    this.sensor.createGetField('smartmodeactual', ['SMARTMODE', 'ACTUAL'], true, undefined, 'OFF', 'COOLING', 'HEATING'); // Heating smartmode invokes LEARN;STATE;OFF and FAN;PWR;ON and FAN;SPD;ACTUAL;1 and WINTERMODE;STATE;ON and SMARTMODE;STATE;HEATING and SMARTMODE;ACTUAL;HEATING
+    this.sensor.createGetField('smartmodestate', ['SMARTMODE', 'STATE'], true, undefined, 'LEARN', 'COOLING', 'HEATING', 'FOLLOWSTAT'); // FOLLOWSTAT is the works with nest option, it is followed by SMARTMODE;ACTUAL;OFF command
 
     this.learn = new BigAssProperty('learn', this);
     this.learn.createGetField('isOn', ['LEARN', 'STATE'], true, undefined, 'LEARN', 'OFF'); // LEARN appears to be the on command rather than ON, ie LEARN;STATE;LEARN. When turned on, two or three commands follow, WINTERMODE;STATE;OFF and SMARTMODE;STATE;COOLING and SMARTMODE;ACTUAL;COOLING
     this.learn.createGetField('minSpeed', ['LEARN', 'MINSPEED'], true);
     this.learn.createGetField('maxSpeed', ['LEARN', 'MAXSPEED'], true);
-    this.learn.createGetField('zeroTemp', ['LEARN', 'ZEROTEMP'], true); // this is a four digit number that represents the temperature in celsius (without a decimal) at which the fan automatically turns off in smart mode. For instance '2111' is 21.11 C which is 70 F 
+    this.learn.createGetField('zeroTemp', ['LEARN', 'ZEROTEMP'], true); // This is a four digit number that represents the temperature in celsius (without a decimal) at which the fan automatically turns off in smart mode. For instance '2111' is 21.11 C which is 70 F 
 
     this.sleep = new BigAssProperty('sleep', this);
     this.sleep.createGetField('isOn', ['SLEEP', 'STATE'], true, undefined, 'ON', 'OFF');
@@ -240,10 +259,10 @@ function BigAssFan (name, id, address, master) {
     this.device.createGetField('beeper', ['DEVICE', 'BEEPER'], true, undefined, 'ON', 'OFF');
     this.device.createGetField('indicators', ['DEVICE', 'INDICATORS'], true, undefined, 'ON', 'OFF');
     this.device.createGetField('winterMode', ['WINTERMODE', 'STATE'], true, undefined, 'ON', 'OFF');
-    this.device.createGetField('height', ['WINTERMODE', 'HEIGHT'], true); //this is a whole number in meters, like 274 for 9 ft, 244 for 8 ft etc
+    this.device.createGetField('height', ['WINTERMODE', 'HEIGHT'], true); // This is a whole number in meters, like 274 for 9 ft, 244 for 8 ft etc
     this.device.createGetField('token', ['NW', 'TOKEN'], false); // ??? token for what? reference to api.bigassfans.com in packets
     this.device.createGetField('dhcp', ['NW', 'DHCP'], true, undefined, 'ON', 'OFF');
-    this.device.createGetField('fw', ['FW', 'FW000003'], false); // What is the FW000003 for?
+    this.device.createGetField('fw', ['FW', 'FW000003'], false); // What is the FW000003 for in the query?
     this.device.createGetField('broadcastSSID', ['NW', 'SSID'], true);
     this.device.createGetField('isAccessPoint', ['NW', 'AP'], true, 'STATUS', 'ON', 'OFF');
 
@@ -275,9 +294,9 @@ function BigAssFan (name, id, address, master) {
     this.master.dispatchForFans[id] = this.handleMessage;
 
     this.updateAll = function(callback) {
-        var syncCallback = new syncingCallback(this.propertyTable, callback);
+        var syncCallback = syncingCallback(this.propertyTable, callback);
         for (var propertyKey in this.propertyTable) {
-            this.propertyTable[propertyKey].updateAll(syncCallback.callbackToUse);
+            this.propertyTable[propertyKey].updateAll(syncCallback);
         }
     }.bind(this)
 
@@ -291,28 +310,51 @@ function BigAssFan (name, id, address, master) {
     }.bind(this)
 }
 
+/******************************
+ * Below are Utility functions
+ * TODO: Move to seperate file?
+ ******************************/
+
+/**
+ * This function supplies a callback which can be called
+ * N times, where N is the number of elements in 
+ * tableBeingUpdated. Once this supplied callback has been
+ * called these N times it will call the passed in callback
+ */
 function syncingCallback (tableBeingUpdated, callback) {
-    this.callCount = 0;
-    this.lengthOfTable = Object.keys(tableBeingUpdated).length;
+    var callCount = 0;
+    var lengthOfTable = Object.keys(tableBeingUpdated).length;
 
     var callbackForUser = function() {
-        if (++this.callCount == this.lengthOfTable) {
+        if (++callCount == lengthOfTable) {
             callback();
         }
-    }.bind(this)
-    this.callbackToUse = callback ? callbackForUser : undefined;
+    }
+
+    return callback ? callbackForUser : undefined;
 }
 
-var retryCall = function(maxRetries, waitTimeOnRetry, toCall, isSuccess) {
+/**
+ * Will retry a given call until success or failure
+ *
+ * @param maxRetries      - Maximum number of retries
+ * @param waitTimeOnRetry - Time between each retry
+ * @param toCall          - Function to call as a part of each retry
+ * @param isSuccess       - Function to call to check if retry was successful (Returns true/false)
+ * @param isFailure       - Function to call if all retries were a failure
+ */
+var retryCall = function(maxRetries, waitTimeOnRetry, toCall, isSuccess, isFailure) {
     var tried = 0;
     var retry = function() {
         if (!isSuccess()) {
             if (++tried >= maxRetries) {
                 myLogWrapper("Failed - no more retries left");
                 clearInterval(id);
+                isFailure();
+            } else {
+                myLogWrapper("Failed - retrying : " + tried);
+                toCall();
             }
-            myLogWrapper("Failed - retrying : " + tried);
-            toCall();
         } else {
             clearInterval(id);
         }
@@ -321,6 +363,9 @@ var retryCall = function(maxRetries, waitTimeOnRetry, toCall, isSuccess) {
     toCall();
 }
 
+/**
+ * Simple logging wrapper so that logging can be turned on/off
+ */
 var myLogWrapper = function(msg) {
     if (exports.logging) {
         console.log(msg)
@@ -328,4 +373,6 @@ var myLogWrapper = function(msg) {
 };
 
 exports.FanMaster = FanMaster;
+exports.BigAssFan = BigAssFan;
 exports.logging = false;
+

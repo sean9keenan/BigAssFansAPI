@@ -20,14 +20,15 @@ FanMaster
  - Allows sending messages to all fans
  - Routes all incoming messages to the appropriate child fans
  - Retries fan searching if fans detected < fans specified in constructor
+ - Will not search for any fans if 0 is passed into constructor
 
 Every fan needs a `FanMaster`! Because that's where the messages come from!
 
 ### Usage
  - Initialize with: `new bigAssApi.FanMaster(numberOfExpectedFans)`
  	- Will continue to query for new fans until numberOfExpectedFans is met - default is 1
- - `onFanFullyUpdated` - callback you can override - called on every new fully initialized fan
- - `onFanConnection` - callback you can override - called on every new fan connection with the fan connected
+ - `onFanFullyUpdated` - callback you can override - called with every new fully initialized fan
+ - `onFanConnection` - callback you can override - called with every new fan connection with the fan connected
  	- Will get called before onFanFullyUpdated - but not guaranteed to have all fields updated (some will be `undefined`)
  - `rescanForFans` - rescans for all fans
  - `rescanUntilAllFans` - continues rescanning until `fanMaster.numberOfExpectedFans >= fansFound`
@@ -116,11 +117,15 @@ myMaster.onFanFullyUpdated = function(myBigAss){
  - `device.broadcastSSID` - readonly
  - `device.isAccessPoint` - bool value
 
+Examples
+--------
+To see more examples, [navigate to the examples directory](./Examples)!
+
 How was this made
 -----------------
 Through the magic of Wireshark! And the time granted by a weekend!
 
-Pretty sure all the API's I saw on when sniffing are now in here. But that'll probably change as BigAssFans adds more features.
+Pretty sure all the API's I saw when sniffing are now in here. But that'll probably change as BigAssFans adds more features.
 
 Where this API is going
 -----------------------

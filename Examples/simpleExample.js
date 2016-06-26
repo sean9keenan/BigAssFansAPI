@@ -1,5 +1,4 @@
-var bigAssApi = require("./BigAssApi");
-bigAssApi.logging = true;
+var bigAssApi = require("../BigAssApi");
 
 var myMaster = new bigAssApi.FanMaster(1); // Expect only one fan in my setup
 
