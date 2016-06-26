@@ -67,6 +67,9 @@ myMaster.onFanFullyUpdated = function(myBigAss){
 
 ```
 
+#### More examples
+To see more examples, [navigate to the examples directory](./Examples)!
+
 ### More about Properties
  - Property get retrieves the last known value
  	- To force a server query use the update function
@@ -116,10 +119,6 @@ myMaster.onFanFullyUpdated = function(myBigAss){
  - `device.fw` - readonly
  - `device.broadcastSSID` - readonly
  - `device.isAccessPoint` - bool value
-
-Examples
---------
-To see more examples, [navigate to the examples directory](./Examples)!
 
 How was this made
 -----------------
