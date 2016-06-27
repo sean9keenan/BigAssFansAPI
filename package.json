@@ -1,0 +1,19 @@
+{
+  "name": "BigAssFansAPI",
+  "version": "1.0.0",
+  "description": "An unofficial API for BigAssFans",
+  "main": "BigAssApi.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sean9keenan/BigAssFansAPI.git"
+  },
+  "keywords": [
+    "homeautomation"
+  ],
+  "author": "Sean Keenan <bigAss@skeenan.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sean9keenan/BigAssFansAPI/issues"
+  },
+  "homepage": "https://github.com/sean9keenan/BigAssFansAPI"
+}
