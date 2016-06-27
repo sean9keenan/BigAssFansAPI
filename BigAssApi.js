@@ -111,6 +111,7 @@ function BigAssProperty (name, bigAssFan) {
                 successfullyUpdated = true;
                 if (optionalCallback) {
                     optionalCallback(null);
+                    optionalCallback = null;
                 }
                 this.unregisterUpdateCallback(name, updateTableId);
             }.bind(this))
@@ -126,6 +127,7 @@ function BigAssProperty (name, bigAssFan) {
             var isRetriesAllFailed = function() {
                 if (optionalCallback) {
                     optionalCallback(new Error("Failed to set property"));
+                    optionalCallback = null;
                 }
             }
 
@@ -168,7 +170,7 @@ function BigAssProperty (name, bigAssFan) {
      * @param callback - Optional callback, null if success, error otherwise
      */
     this.setProperty = function(name, value, callback) {
-        var thisSetFunction = self.setFunctions[name]
+        var thisSetFunction = this.setFunctions[name]
         if (thisSetFunction) {
             thisSetFunction(value, callback)
         }
