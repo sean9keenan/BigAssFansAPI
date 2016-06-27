@@ -4,12 +4,6 @@ This is this an unofficial Node.js API for [Big Ass Fans - fans with SenseME](ww
 
 In particular - all development was done on a Haiku fan with SenseME.
 
-Boring stuff out of the way
----------------------------
-I am in no way am associated with Big Ass Fans. Also this can break at any time if they change their API. I'm also in no way am responsible for you damaging your fan by using this API.
-
-(However - I would be surprised if you did)
-
 Using the API!
 ==============
 Two major components - the FanMaster and the BigAssFan.
@@ -43,10 +37,16 @@ BigAssFan
  - Implementing retries on setting properties
  - Interface to update all properties
 
+### Installation
+
+```
+npm install BigAssFansAPI
+```
+
 ### Example Code
 
 ```javascript
-var bigAssApi = require("./BigAssApi");
+var bigAssApi = require("BigAssFansAPI");
 
 var myMaster = new bigAssApi.FanMaster(1); // Expect only one fan in my setup
 
@@ -126,6 +126,12 @@ How was this made
 Through the magic of Wireshark! And the time granted by a weekend!
 
 Pretty sure all the API's I saw when sniffing are now in here. But that'll probably change as BigAssFans adds more features.
+
+Boring stuff 
+------------
+I am in no way am associated with Big Ass Fans. Also this can break at any time if they change their API. I'm also in no way am responsible for you damaging your fan by using this API.
+
+(However - I would be surprised if you did)
 
 Where this API is going
 -----------------------
