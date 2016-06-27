@@ -167,7 +167,7 @@ function BigAssProperty (name, bigAssFan) {
      * @param value    - Value to set to this property
      * @param callback - Optional callback, null if success, error otherwise
      */
-    this.setProperty(name, value, callback) {
+    this.setProperty = function(name, value, callback) {
         var thisSetFunction = self.setFunctions[name]
         if (thisSetFunction) {
             thisSetFunction(value, callback)
