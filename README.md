@@ -80,6 +80,7 @@ myMaster.onFanFullyUpdated = function(myBigAss){
  - Forcing an update
  	- For property `light.brightness` on BigAssFan: `myBigAss` call `myBigAss.light.update('brightness', optionalCallback)`;
  	- You can also use `myBigAss.update('light', optionalCallback);` or `myBigAss.updateAll(optionalCallback);`
+ - Setting with a callback - with `myBigAss.light.setProperty('brightness', callback)` you can know when your set succeeded (or failed)
 
 #### Properties 'supported'
  - `fan.isOn` - bool value

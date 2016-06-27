@@ -90,6 +90,8 @@ function BigAssProperty (name, bigAssFan) {
     this.allFieldsUpdateQuery = {}
     this.updateCallbacks = {}
 
+    this.setFunctions = {}
+
     this.createGetField = function(name, query, isSettable, additionalProp, trueOpt, falseOpt, optionalFilter) {
         var toSendOnUpdate = query.concat("GET");
         toSendOnUpdate = additionalProp ? toSendOnUpdate.concat(additionalProp) : toSendOnUpdate;
@@ -99,7 +101,7 @@ function BigAssProperty (name, bigAssFan) {
         var privateVarName = '_' + name;
         this[privateVarName] = undefined;
 
-        var setFunction = function(value) {
+        var setFunction = function(value, optionalCallback) {
             // TODO ensure that value fits in "filter"
             if (typeof value == "boolean" && trueOpt && falseOpt) {
                 value = value ? trueOpt : falseOpt;
@@ -107,6 +109,9 @@ function BigAssProperty (name, bigAssFan) {
             var successfullyUpdated = false;
             var updateTableId = this.registerUpdateCallback(name, function() {
                 successfullyUpdated = true;
+                if (optionalCallback) {
+                    optionalCallback(null);
+                }
                 this.unregisterUpdateCallback(name, updateTableId);
             }.bind(this))
 
@@ -114,11 +119,21 @@ function BigAssProperty (name, bigAssFan) {
                 this.bigAssFan.send(query.concat("SET", value))
             }.bind(this)
 
-            retryCall(this.bigAssFan.maxRetries, this.bigAssFan.waitTimeOnRetry, toSetProperty, function (){
+            var isSuccesfullyUpdated = function() {
                 return successfullyUpdated;
-            });
+            }
+
+            var isRetriesAllFailed = function() {
+                if (optionalCallback) {
+                    optionalCallback(new Error("Failed to set property"));
+                }
+            }
+
+            retryCall(this.bigAssFan.maxRetries, this.bigAssFan.waitTimeOnRetry, toSetProperty, isSuccesfullyUpdated, isRetriesAllFailed);
 
         }.bind(this)
+
+        this.setFunctions[name] = setFunction;
 
         Object.defineProperty(this, name, {
             get: function() {
@@ -147,6 +162,19 @@ function BigAssProperty (name, bigAssFan) {
     }.bind(this)
 
     /**
+     * Set a specific property by name
+     * @param name     - Property name to set
+     * @param value    - Value to set to this property
+     * @param callback - Optional callback, null if success, error otherwise
+     */
+    this.setProperty(name, value, callback) {
+        var thisSetFunction = self.setFunctions[name]
+        if (thisSetFunction) {
+            thisSetFunction(value, callback)
+        }
+    }.bind(this);
+
+    /**
      * Register an update callback
      * @param name     - Property name to register for a callback on
      * @param callback - Callback, first arg is error (null if none), second is value
@@ -169,7 +197,7 @@ function BigAssProperty (name, bigAssFan) {
 
         var updateFailed = function() {
             if (callback) {
-                callback("Cannot reach fan / property", null);
+                callback(new Error("Cannot reach fan / property"), null);
             }
         }
 
