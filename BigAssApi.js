@@ -127,7 +127,8 @@ function BigAssProperty (name, bigAssFan) {
             var isRetriesAllFailed = function() {
                 if (optionalCallback) {
                     optionalCallback(new Error("Failed to set property"));
-                    optionalCallback = null;
+                    optionalCallback = null; // TODO: Figure out why this is getting called twice in the first place
+                                             // Espeicially this this fix can still crash
                 }
             }
 
