@@ -4,6 +4,12 @@ This is this an unofficial Node.js API for [Big Ass Fans - fans with SenseME](ww
 
 In particular - all development was done on a Haiku fan with SenseME.
 
+What this could be/is used for
+------------------------------
+ - [Homekit control!](https://github.com/sean9keenan/homebridge-bigAssFans)
+ - [Controlling your fan with keyboard shortcuts](https://github.com/sean9keenan/BigAssFansAPI/blob/master/Examples/fastDimLights.js)
+ - Controlling it via any way you can imagine, just read on
+
 Using the API!
 ==============
 Two major components - the FanMaster and the BigAssFan.
@@ -137,9 +143,7 @@ Where this API is going
 -----------------------
  - Hopefully not breaking you!
  	- Stuff that I have in here shouldn't be changing that much - but if it does - sorry!
- - Integration with [HomeKit](https://github.com/nfarina/homebridge)
  - Checking that setters have only valid input parameters
  - I hear unit tests are a good thing >.>
  - Add support for changing wireless access point used / the whole pairing process flow.
  - Register update callback might be changed to only call you on value update - not on 'fan-says-there-was-an-update-update'
- - Need to have an error callback you can register for - eg : error setting property on fan
