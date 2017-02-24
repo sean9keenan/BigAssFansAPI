@@ -264,15 +264,15 @@ function BigAssFan (name, id, address, master) {
     this.light.createGetField('auto', ['LIGHT', 'AUTO'], true, undefined, 'ON', 'OFF'); // Light sensor enabled
     this.light.createGetField('exists', ['DEVICE', 'LIGHT'], false, undefined, "PRESENT"); // Unknown false string.. WAY too lazy to unplug from fan
 
-    this.sensor = new BigAssProperty('room', this);
+    this.sensor = new BigAssProperty('sensor', this);
     this.sensor.createGetField('isOccupied', ['SNSROCC', 'STATUS'], false, undefined, 'OCCUPIED', 'UNOCCUPIED');
     this.sensor.createGetField('minTimeout', ['SNSROCC', 'TIMEOUT'], true, 'MIN'); // Seconds (ie 3600000 is 60 min)
     this.sensor.createGetField('maxTimeout', ['SNSROCC', 'TIMEOUT'], true, 'MAX'); // Seconds
     this.sensor.createGetField('timeout', ['SNSROCC', 'TIMEOUT'], true, 'CURR');   // Seconds
 
-    this.sensor = new BigAssProperty('smartmode', this);
-    this.sensor.createGetField('smartmodeactual', ['SMARTMODE', 'ACTUAL'], true, undefined, 'OFF', 'COOLING', 'HEATING'); // Heating smartmode invokes LEARN;STATE;OFF and FAN;PWR;ON and FAN;SPD;ACTUAL;1 and WINTERMODE;STATE;ON and SMARTMODE;STATE;HEATING and SMARTMODE;ACTUAL;HEATING
-    this.sensor.createGetField('smartmodestate', ['SMARTMODE', 'STATE'], true, undefined, 'LEARN', 'COOLING', 'HEATING', 'FOLLOWSTAT'); // FOLLOWSTAT is the works with nest option, it is followed by SMARTMODE;ACTUAL;OFF command
+    this.smartmode = new BigAssProperty('smartmode', this);
+    this.smartmode.createGetField('smartmodeactual', ['SMARTMODE', 'ACTUAL'], true, undefined, 'OFF', 'COOLING', 'HEATING'); // Heating smartmode invokes LEARN;STATE;OFF and FAN;PWR;ON and FAN;SPD;ACTUAL;1 and WINTERMODE;STATE;ON and SMARTMODE;STATE;HEATING and SMARTMODE;ACTUAL;HEATING
+    this.smartmode.createGetField('smartmodestate', ['SMARTMODE', 'STATE'], true, undefined, 'LEARN', 'COOLING', 'HEATING', 'FOLLOWSTAT'); // FOLLOWSTAT is the works with nest option, it is followed by SMARTMODE;ACTUAL;OFF command
 
     this.learn = new BigAssProperty('learn', this);
     this.learn.createGetField('isOn', ['LEARN', 'STATE'], true, undefined, 'LEARN', 'OFF'); // LEARN appears to be the on command rather than ON, ie LEARN;STATE;LEARN. When turned on, two or three commands follow, WINTERMODE;STATE;OFF and SMARTMODE;STATE;COOLING and SMARTMODE;ACTUAL;COOLING
