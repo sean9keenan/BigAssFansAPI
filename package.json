@@ -1,6 +1,6 @@
 {
   "name": "BigAssFansAPI",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "An unofficial API for BigAssFans",
   "main": "BigAssApi.js",
   "repository": {
